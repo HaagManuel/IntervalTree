@@ -4,29 +4,35 @@
 #include "input_generation.h"
 #include "brute_force_line_stap.h"
 #include "pointer_interval_tree.h"
+#include "benchmark.h"
 
 int main()
 {
     std::cout << "hello interval tree \n";
 
-    IntervalList list = fixed_length_sequence(10, 3.0);
+    // int n = 5;
+    // std::vector<int> sizes = {1000 * 10, 1000 * 100, 1000 * 1000, 1000 * 1000 * 10};
+    // benchmark_construction<PointerIntervalTree>(n, sizes);
 
-    sort_by_intervals(list);
-    print_vector(list);
+    // int queries = 1000;
+    // std::vector<int> sizes = {1000 * 100, 1000 * 1000, 1000 * 1000 * 10, 1000 * 1000 * 20, 1000 * 1000 * 40};
 
-    BruteForceLineStab bf(list);
+    // std::cout << "brute force"
+    //           << "\n";
+    // benchmark_query<BruteForceLineStab>(queries, sizes);
+
+    // std::cout << "pointer interval tree"
+    //           << "\n";
+    // benchmark_query<PointerIntervalTree>(queries, sizes);
+
+    int n = 1e6;
+    float min_len = 1;
+    float max_len = 10;
+    float max_range = 5000;
+
+    IntervalList list = random_uniform_intervals(n, min_len, max_len, max_range);
     PointerIntervalTree pt_tree(list);
-    std::vector<int> ids;
-
-    float p = 5;
-
-    bf.stabbed_intervals(p, ids);
-    print_vector(ids);
-    ids.clear();
-    
-    pt_tree.stabbed_intervals(p, ids);
-    print_vector(ids);
-    ids.clear();
+    pt_tree.nodes_per_level();
 
     return 0;
 }

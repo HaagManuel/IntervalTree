@@ -177,6 +177,46 @@ struct PointerIntervalTree
         }
     }
 
+    void nodes_per_level()
+    {
+        std::vector<int> cnt(20, 0);
+        std::vector<int> nodes(20, 0);
+        rec_node_per_level(root, cnt, nodes, 0);
+        for (auto c : cnt)
+        {
+            std::cout << c << " ";
+        }
+        std::cout << "\n";
+        for (auto c : nodes)
+        {
+            std::cout << c << " ";
+        }
+        std::cout << "\n";
+        for (int i = 0; i < (int)cnt.size(); i++)
+        {
+            if (nodes[i] > 0)
+            {
+                float f = (float)cnt[i] / nodes[i];
+                std::cout << f << " ";
+            }
+        }
+        std::cout << "\n";
+    }
+
+    void rec_node_per_level(PointerNode *node, std::vector<int> &cnt, std::vector<int> &nodes, int depth)
+    {
+        cnt[depth] += node->x_coordinates.size();
+        nodes[depth]++;
+        if (node->has_left())
+        {
+            rec_node_per_level(node->left, cnt, nodes, depth + 1);
+        }
+        if (node->has_right())
+        {
+            rec_node_per_level(node->right, cnt, nodes, depth + 1);
+        }
+    }
+
     PointerNode *root;
     IntervalList &intervals;
 };
