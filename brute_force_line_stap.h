@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cassert>
 #include "common.h"
 
 struct BruteForceLineStab
