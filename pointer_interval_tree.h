@@ -77,53 +77,6 @@ struct PointerIntervalTree
         delete node;
     }
 
-    float get_split_point(IntervalIdList &id_list)
-    {
-        // point and is end
-        std::vector<std::pair<float, bool>> points;
-        int n = id_list.size();
-        points.reserve(2 * n);
-
-        // sort set of start and end points
-        for (int i = 0; i < n; i++)
-        {
-            points.emplace_back(id_list[i].interval.start, false);
-            points.emplace_back(id_list[i].interval.end, true);
-        }
-        std::sort(points.begin(), points.end());
-
-        // sweep line
-        int active = 0;
-        int left = 0;
-        int best_balance = n;
-        float best_point = 0;
-        for (int i = 0; i < 2 * n - 1; i++)
-        {
-            auto [p, is_end] = points[i];
-            if (!is_end)
-            {
-                active++;
-            }
-            else
-            {
-                active--;
-                left++;
-            }
-            int right = n - active - left;
-            int balance = std::abs(left - right);
-            if (balance < best_balance)
-            {
-                best_balance = balance;
-                best_point = (p + points[i + 1].first) / 2;
-            }
-            if (balance == 0 || left > right)
-            {
-                break;
-            }
-        }
-        return best_point;
-    }
-
     void build_recursive(PointerNode *node, IntervalIdList &id_list)
     {
         if (id_list.size() < MAX_LEAF_SIZE)

@@ -5,6 +5,7 @@
 #include "input_generation.h"
 #include "brute_force_line_stap.h"
 #include "pointer_interval_tree.h"
+#include "array_interval_tree.h"
 
 void check_ids_same(std::vector<int> &a, std::vector<int> &b)
 {
@@ -45,8 +46,10 @@ TEST(EqualSpacedIntervals, IntervalTree)
 
     BruteForceLineStab bf(list);
     PointerIntervalTree pt_tree(list);
+    ArrayIntervalTree arr_tree(list);
 
     check_equal_spaced_queries(bf, pt_tree, -2, n + len + 2, 0.25);
+    check_equal_spaced_queries(bf, arr_tree, -2, n + len + 2, 0.25);
 }
 
 TEST(RandomUniformIntervals, IntervalTree)
@@ -56,13 +59,15 @@ TEST(RandomUniformIntervals, IntervalTree)
     float max_len = 10;
     float max_range = 100;
     int seed = 3;
-
     IntervalList list = random_uniform_intervals(n, min_len, max_len, max_range, seed);
+
     BruteForceLineStab bf(list);
     PointerIntervalTree pt_tree(list);
+    ArrayIntervalTree arr_tree(list);
 
     float start = -2;
     float end = max_range + 2;
     float step = 0.25;
     check_equal_spaced_queries(bf, pt_tree, start, end, step);
+    check_equal_spaced_queries(bf, arr_tree, start, end, step);
 }

@@ -34,7 +34,7 @@ struct Interval
 struct PointId
 {
     float point;
-    float id;
+    int id;
 
     bool operator<(const PointId &other) const
     {
@@ -52,7 +52,7 @@ struct PointId
 struct IntervalId
 {
     Interval interval;
-    float id;
+    int id;
 };
 
 using IntervalList = std::vector<Interval>;
@@ -88,6 +88,53 @@ bool check_intervals_sorted(IntervalList &list)
             return false;
     }
     return true;
+}
+
+float get_split_point(IntervalIdList &id_list)
+{
+    // point and is end
+    std::vector<std::pair<float, bool>> points;
+    int n = id_list.size();
+    points.reserve(2 * n);
+
+    // sort set of start and end points
+    for (int i = 0; i < n; i++)
+    {
+        points.emplace_back(id_list[i].interval.start, false);
+        points.emplace_back(id_list[i].interval.end, true);
+    }
+    std::sort(points.begin(), points.end());
+
+    // sweep line
+    int active = 0;
+    int left = 0;
+    int best_balance = n;
+    float best_point = 0;
+    for (int i = 0; i < 2 * n - 1; i++)
+    {
+        auto [p, is_end] = points[i];
+        if (!is_end)
+        {
+            active++;
+        }
+        else
+        {
+            active--;
+            left++;
+        }
+        int right = n - active - left;
+        int balance = std::abs(left - right);
+        if (balance < best_balance)
+        {
+            best_balance = balance;
+            best_point = (p + points[i + 1].first) / 2;
+        }
+        if (balance == 0 || left > right)
+        {
+            break;
+        }
+    }
+    return best_point;
 }
 
 template <typename T>
