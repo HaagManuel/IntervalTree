@@ -4,13 +4,44 @@
 #include <cassert>
 #include "common.h"
 
+#define MAX_LEAF_SIZE 100
+
 struct PointerNode
 {
     float split_point;
+    bool is_splitted;
     PointerNode *left;
     PointerNode *right;
     std::vector<PointId> x_coordinates;
     std::vector<PointId> y_coordinates;
+
+    void create_coordinate_vectors(IntervalIdList &id_list)
+    {
+        assert(x_coordinates.size() == 0);
+        assert(y_coordinates.size() == 0);
+
+        x_coordinates.reserve(id_list.size());
+        y_coordinates.reserve(id_list.size());
+        for (auto [intv, id] : id_list)
+        {
+            x_coordinates.push_back({intv.start, id});
+            y_coordinates.push_back({intv.end, id});
+        }
+    }
+
+    void sort_by_point()
+    {
+        sort(x_coordinates.begin(), x_coordinates.end());
+        sort(y_coordinates.begin(), y_coordinates.end());
+    }
+
+    void sort_by_id()
+    {
+        auto cmp = [&](auto &a, auto &b)
+        { return a.id < b.id; };
+        sort(x_coordinates.begin(), x_coordinates.end(), cmp);
+        sort(y_coordinates.begin(), y_coordinates.end(), cmp);
+    }
 
     inline bool has_left() const { return left != nullptr; }
     inline bool has_right() const { return right != nullptr; }
@@ -95,6 +126,14 @@ struct PointerIntervalTree
 
     void build_recursive(PointerNode *node, IntervalIdList &id_list)
     {
+        if (id_list.size() < MAX_LEAF_SIZE)
+        {
+            node->is_splitted = false;
+            node->create_coordinate_vectors(id_list);
+            node->sort_by_id();
+            return;
+        }
+
         float split_point = get_split_point(id_list);
         IntervalIdList left, mid, right;
         for (auto [intv, id] : id_list)
@@ -114,16 +153,10 @@ struct PointerIntervalTree
         }
 
         // build middle node
+        node->is_splitted = true;
         node->split_point = split_point;
-        node->x_coordinates.reserve(mid.size());
-        node->y_coordinates.reserve(mid.size());
-        for (auto [intv, id] : mid)
-        {
-            node->x_coordinates.push_back({intv.start, id});
-            node->y_coordinates.push_back({intv.end, id});
-        }
-        sort(node->x_coordinates.begin(), node->x_coordinates.end());
-        sort(node->y_coordinates.begin(), node->y_coordinates.end());
+        node->create_coordinate_vectors(mid);
+        node->sort_by_point();
 
         // recurse on left and right part
         if (left.size() > 0)
@@ -146,6 +179,19 @@ struct PointerIntervalTree
     void recursive_search(PointerNode *node, float point, std::vector<int> &ids)
     {
         int n = node->x_coordinates.size();
+
+        if (!node->is_splitted)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                if (node->x_coordinates[i].point <= point && point <= node->y_coordinates[i].point)
+                {
+                    ids.push_back(node->x_coordinates[i].id);
+                }
+            }
+            return;
+        }
+
         if (point < node->split_point)
         {
             for (int i = 0; i < n && node->x_coordinates[i].point <= point; i++)
@@ -184,12 +230,14 @@ struct PointerIntervalTree
         rec_node_per_level(root, cnt, nodes, 0);
         for (auto c : cnt)
         {
-            std::cout << c << " ";
+            if (c > 0)
+                std::cout << c << " ";
         }
         std::cout << "\n";
         for (auto c : nodes)
         {
-            std::cout << c << " ";
+            if (c > 0)
+                std::cout << c << " ";
         }
         std::cout << "\n";
         for (int i = 0; i < (int)cnt.size(); i++)

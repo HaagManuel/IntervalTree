@@ -71,11 +71,16 @@ void benchmark_query(int num_queries, std::vector<int> &sizes)
                 ids.clear();
             }
         };
-        int timeMs = measureTimeMs(f);
+        int timeMs = measureTimeMs(f) + 0.0001;
         float mean = (float)timeMs / num_queries;
+        float throughput = (float)num_queries / timeMs;
         float mean_hits = (float)num_hits / num_queries;
         std::string unit = "ms";
-        std::cout << "n = " << n << " --> " << mean << " " << unit << ", " << mean_hits << " hits, per query"
+        std::cout << "n = " << n << " --> "
+                  << mean << " " << unit << ", "
+                  << mean_hits << " hits, "
+                  << throughput << " MOPS, "
+                  << "per query"
                   << "\n";
     }
     std::cout << "\n";
