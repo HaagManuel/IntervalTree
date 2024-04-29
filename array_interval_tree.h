@@ -44,9 +44,10 @@ struct ArrayIntervalTree
 
     void build_recursive(int node_idx, IntervalIdList &id_list)
     {
-        TreeNode* node = &nodes[node_idx];
-        float split_point = get_split_point(id_list);
+        TreeNode *node = &nodes[node_idx];
 
+        // divide intervals into left, middle and right
+        float split_point = get_split_point_median(id_list);
         IntervalIdList left, mid, right;
         for (auto [intv, id] : id_list)
         {
@@ -64,7 +65,7 @@ struct ArrayIntervalTree
             }
         }
 
-        // build middle node
+        // create middle node
         int n = mid.size();
         node->split_point = split_point;
         node->start_intervals = entries.size();
@@ -89,14 +90,14 @@ struct ArrayIntervalTree
         // recurse on left and right part
         if (left.size() > 0)
         {
-            // nodes array might have been reallocated
+            // node array might have been reallocated
             int idx = create_new_node();
             nodes[node_idx].left_node = idx;
             build_recursive(idx, left);
         }
         if (right.size() > 0)
         {
-            // nodes array might have been reallocated
+            // node array might have been reallocated
             int idx = create_new_node();
             nodes[node_idx].right_node = idx;
             build_recursive(idx, right);
@@ -110,7 +111,7 @@ struct ArrayIntervalTree
 
     void recursive_search(int node_idx, float point, std::vector<int> &ids)
     {
-        TreeNode* node = &nodes[node_idx];
+        TreeNode *node = &nodes[node_idx];
         int start = node->start_intervals;
         int end = node->end_intervals;
         if (point < node->split_point)
@@ -142,6 +143,23 @@ struct ArrayIntervalTree
                 ids.push_back(entries[i].id1);
             }
         }
+    }
+
+    int get_depth() const
+    {
+        return get_depth_rec(0);
+    }
+
+    int get_depth_rec(int node_idx) const
+    {
+        int l = 0;
+        int r = 0;
+        if (nodes[node_idx].has_left())
+            l = get_depth_rec(nodes[node_idx].left_node);
+        if (nodes[node_idx].has_right())
+            r = get_depth_rec(nodes[node_idx].right_node);
+
+        return 1 + std::max(l, r);
     }
 
     std::vector<TreeNode> nodes;

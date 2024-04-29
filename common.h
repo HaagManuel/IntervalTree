@@ -89,8 +89,24 @@ bool check_intervals_sorted(IntervalList &list)
     }
     return true;
 }
+float get_split_point_median(IntervalIdList &id_list)
+{
+    // point and is end
+    std::vector<std::pair<float, bool>> points;
+    int n = id_list.size();
+    points.reserve(2 * n);
 
-float get_split_point(IntervalIdList &id_list)
+    for (int i = 0; i < n; i++)
+    {
+        points.emplace_back(id_list[i].interval.start, false);
+        points.emplace_back(id_list[i].interval.end, true);
+    }
+    auto m = points.begin() + points.size() / 2;
+    std::nth_element(points.begin(), m, points.end());
+    return points[points.size() / 2].first;
+}
+
+float get_split_point_sweepline(IntervalIdList &id_list)
 {
     // point and is end
     std::vector<std::pair<float, bool>> points;

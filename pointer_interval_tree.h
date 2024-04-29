@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cassert>
+#include <cmath>
 #include "common.h"
 
 #define MAX_LEAF_SIZE 100
@@ -79,6 +80,7 @@ struct PointerIntervalTree
 
     void build_recursive(PointerNode *node, IntervalIdList &id_list)
     {
+        // stop recursion early for small number of intervals
         if (id_list.size() < MAX_LEAF_SIZE)
         {
             node->is_splitted = false;
@@ -87,7 +89,8 @@ struct PointerIntervalTree
             return;
         }
 
-        float split_point = get_split_point(id_list);
+        // divide intervals into left, middle and right
+        float split_point = get_split_point_median(id_list);
         IntervalIdList left, mid, right;
         for (auto [intv, id] : id_list)
         {
@@ -105,7 +108,7 @@ struct PointerIntervalTree
             }
         }
 
-        // build middle node
+        // create middle node
         node->is_splitted = true;
         node->split_point = split_point;
         node->create_coordinate_vectors(mid);
@@ -135,6 +138,7 @@ struct PointerIntervalTree
 
         if (!node->is_splitted)
         {
+            // scan all intervals
             for (int i = 0; i < n; i++)
             {
                 if (node->x_coordinates[i].point <= point && point <= node->y_coordinates[i].point)
@@ -174,6 +178,23 @@ struct PointerIntervalTree
                 ids.push_back(node->x_coordinates[i].id);
             }
         }
+    }
+
+    int get_depth() const
+    {
+        return get_depth_rec(root);
+    }
+
+    int get_depth_rec(PointerNode *node) const
+    {
+        int l = 0;
+        int r = 0;
+        if (node->has_left())
+            l = get_depth_rec(node->left);
+        if (node->has_right())
+            r = get_depth_rec(node->right);
+
+        return 1 + std::max(l, r);
     }
 
     void nodes_per_level()
@@ -216,6 +237,25 @@ struct PointerIntervalTree
         {
             rec_node_per_level(node->right, cnt, nodes, depth + 1);
         }
+    }
+
+    int get_memory_bytes()
+    {
+        return rec_memory_bytes(root);
+    }
+
+    int rec_memory_bytes(PointerNode *node)
+    {
+        int memory = sizeof(PointerNode) + 2 * sizeof(PointId) * node->x_coordinates.size();
+        if (node->has_left())
+        {
+            memory += rec_memory_bytes(node->left);
+        }
+        if (node->has_right())
+        {
+            memory += rec_memory_bytes(node->right);
+        }
+        return memory;
     }
 
     PointerNode *root;

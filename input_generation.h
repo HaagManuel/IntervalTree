@@ -18,11 +18,10 @@ IntervalList fixed_length_sequence(int num_intervals, float interval_length)
     return intervals;
 }
 
-IntervalList random_uniform_intervals(int num_intervals, float min_len, float max_len, float max_range, int seed = 0)
+IntervalList random_uniform_intervals(int num_intervals, float min_len, float max_len, float max_range, RandomGenerator &rnd)
 {
     assert(max_len < max_range);
     assert(min_len <= max_len);
-    RandomGenerator rnd(seed);
     auto start_points = rnd.n_random_float(num_intervals, 0, max_range - max_len);
     auto lens = rnd.n_random_float(num_intervals, min_len, max_len);
     IntervalList intervals;

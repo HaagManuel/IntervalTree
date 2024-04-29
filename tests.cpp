@@ -59,7 +59,8 @@ TEST(RandomUniformIntervals, IntervalTree)
     float max_len = 10;
     float max_range = 100;
     int seed = 3;
-    IntervalList list = random_uniform_intervals(n, min_len, max_len, max_range, seed);
+    RandomGenerator rnd(seed);
+    IntervalList list = random_uniform_intervals(n, min_len, max_len, max_range, rnd);
 
     BruteForceLineStab bf(list);
     PointerIntervalTree pt_tree(list);

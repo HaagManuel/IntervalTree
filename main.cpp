@@ -1,34 +1,10 @@
 #include <iostream>
 
-#include "common.h"
-#include "input_generation.h"
-#include "brute_force_line_stap.h"
-#include "pointer_interval_tree.h"
-#include "array_interval_tree.h"
 #include "benchmark.h"
 
 int main()
 {
-    std::cout << "hello interval tree \n";
-
-    // int n = 5;
-    // std::vector<int> sizes = {1000 * 10, 1000 * 100, 1000 * 1000, 1000 * 1000 * 10};
-    // benchmark_construction<PointerIntervalTree>(n, sizes);
-    // benchmark_construction<ArrayIntervalTree>(n, sizes);
-
-    int queries = 1000;
-    std::vector<int> sizes = {1000 * 100, 1000 * 1000, 1000 * 1000 * 10, 1000 * 1000 * 20, 1000 * 1000 * 40};
-
-    // std::cout << "brute force"
-    //           << "\n";
-    // benchmark_query<BruteForceLineStab>(queries, sizes);
-
-    std::cout << "pointer interval tree"
-              << "\n";
-    benchmark_query<PointerIntervalTree>(queries, sizes);
-    std::cout << "array interval tree"
-              << "\n";
-    benchmark_query<ArrayIntervalTree>(queries, sizes);
-
+    print_csv_header();
+    create_csv();
     return 0;
 }
