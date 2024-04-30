@@ -1,7 +1,7 @@
 # Interval Tree
 
 This project is part of the course [Advanced Datastructures](https://www.fib.upc.edu/en/studies/masters/master-innovation-and-research-informatics/curriculum/syllabus/ADS-MIRI) taught at the UPC FIB in Barcelona. 
-We implement the Interval Tree to solve the Line Stabbing problem.
+We implement the [Interval Tree](https://en.wikipedia.org/wiki/Interval_tree) to solve the Line Stabbing problem.
 In the later we are given a set of intervals $I_1 = [a_1, b_1], I_2 = [a_2, b_2], \dots, I_n = [a_n , b_n] \subseteq \mathbb{R}$  and are asked to report all intervals that intersect a query $s \in \mathbb{R}$. 
 
 
@@ -28,4 +28,3 @@ Average query time by number of intervals intervals.
 
 Average query time by $p$ and $n=2^{20}$ intervals.
 ![plot1](/documents/query_by_p.jpg)
-- 
